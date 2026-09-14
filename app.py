@@ -32,6 +32,7 @@ The product name itself is not used for allergen detection.
 """
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 import joblib
@@ -172,6 +173,27 @@ model = joblib.load("model.joblib")
 
 
 app = FastAPI()
+
+
+# ---------------------------------------------------------
+# CORS
+# ---------------------------------------------------------
+#
+# Allows the Flutter Web application to call the API from
+# the browser.
+#
+# Postman does not enforce browser CORS rules, which is why
+# the API could work in Postman while Flutter Web returned:
+#
+# "ClientException: Failed to fetch"
+#
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class DetectRequest(BaseModel):
